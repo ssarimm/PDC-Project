@@ -32,14 +32,13 @@ This application simulates a centralized chat system where a **Master Process (R
 
 ### 1. Switch to User
 Avoid running as root. Switch to your standard user:
-```bash
-
-su - sarim
-2. Navigate to Directory
-cd ~/mpi_chat
-3. Compile the Code
+- su - sarim
+### 2. Navigate to Directory
+- cd ~/mpi_chat
+### 3. Compile the Code
 Use the mpicc wrapper to link MPI libraries correctly:
-mpicc chat.c -o chat
-4. Run the Application
+- mpicc chat.c -o chat
+### 4. Run the Application
 Launch the cluster with 4 processes (adjust -np as needed):
-mpirun --oversubscribe -np 4 ./chat
+- mpirun --oversubscribe -np 4 ./chat
+```bash
