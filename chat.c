@@ -1,3 +1,4 @@
+cat > ~/mpi_chat/chat.c << 'EOF'
 #include <mpi.h>
 #include <stdio.h>
 #include <string.h>
@@ -44,6 +45,7 @@ int main(int argc, char *argv[]) {
     int choice;
     Message msg;
     MPI_Status status;
+    char buf[20];
 
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -56,21 +58,23 @@ int main(int argc, char *argv[]) {
             printf("1. Send Message\n");
             printf("2. Show Chat History\n");
             printf("3. Exit\n");
+            printf("4. Clear History\n");
             printf("Choice: ");
             fflush(stdout);
-            scanf("%d", &choice);
-            getchar();
+
+            fgets(buf, sizeof(buf), stdin);
+            sscanf(buf, "%d", &choice);
 
             if (choice == 1) {
                 printf("Sender (1-%d): ", size - 1);
                 fflush(stdout);
-                scanf("%d", &msg.sender);
-                getchar();
+                fgets(buf, sizeof(buf), stdin);
+                sscanf(buf, "%d", &msg.sender);
 
                 printf("Receiver (1-%d): ", size - 1);
                 fflush(stdout);
-                scanf("%d", &msg.receiver);
-                getchar();
+                fgets(buf, sizeof(buf), stdin);
+                sscanf(buf, "%d", &msg.receiver);
 
                 if (msg.sender <= 0 || msg.sender >= size ||
                     msg.receiver <= 0 || msg.receiver >= size) {
@@ -106,6 +110,12 @@ int main(int argc, char *argv[]) {
                 break;
             }
 
+            else if (choice == 4) {
+                FILE *f = fopen("history.txt", "w");
+                if (f) { fclose(f); }
+                printf("History cleared.\n");
+            }
+
             else {
                 printf("Invalid choice.\n");
             }
@@ -118,11 +128,14 @@ int main(int argc, char *argv[]) {
             if (strcmp(msg.text, "exit") == 0)
                 break;
 
-            printf("\nProcess %d received from %d: %s\n",
+            fflush(stdout);
+            printf("\n[Process %d received from %d]: %s\n",
                    rank, msg.sender, msg.text);
+            fflush(stdout);
         }
     }
 
     MPI_Finalize();
     return 0;
 }
+EOF
